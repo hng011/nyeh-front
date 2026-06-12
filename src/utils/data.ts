@@ -96,36 +96,12 @@ export const experiences: Experience[] = [
 
 export const projects: Project[] = [
   {
-    title: 'LLM-Based Fiction Story Generation',
+    title: 'Commander',
     description:
-      'Led a hands-on workshop session demonstrating how Large Language Models can be leveraged for creative text generation, specifically fiction story writing.',
-    techStack: ['Python', 'LLMs', 'NLP', 'Hugging Face'],
+      'Networking Stuff – a glimpse into TCP/IP with a Client-Server Architecture for Remote Command Execution.',
+    techStack: ['Python', 'Socket Programming', 'Client/Server Architecture'],
     outcome:
-      'Successfully delivered to an international audience of university lecturers from Uzbekistan as part of the International Summer Course program.',
-  },
-  {
-    title: 'NVIDIA DGX AI/ML Training Lab',
-    description:
-      'Completed Training of Trainers program and facilitated practical learning sessions on NVIDIA DGX supercomputer operations for AI and Data Science students.',
-    techStack: ['NVIDIA DGX', 'Python', 'CUDA', 'Deep Learning', 'Data Science'],
-    outcome:
-      'Enabled dozens of Gunadarma University students to gain hands-on experience with enterprise-grade AI hardware and develop AI/Data Science projects.',
-  },
-  {
-    title: 'ERP & CRM System Enhancement',
-    description:
-      'Enhanced enterprise ERP and CRM applications by optimizing SQL procedures, integrating APIs with front-end components, and developing custom RDL reports.',
-    techStack: ['JavaScript', 'Ext JS', 'SQL', 'ERP', 'CRM'],
-    outcome:
-      'Improved system performance and user experience for enterprise clients at Minova Infotech Solutions.',
-  },
-  {
-    title: 'Data Analytics & Reporting at BNI',
-    description:
-      'Processed and analyzed banking data to support data-driven decision-making, generating efficient reports and visualizations for one of Indonesia\'s largest state-owned banks.',
-    techStack: ['Data Analysis', 'Reporting', 'Visualization', 'SQL'],
-    outcome:
-      'Enhanced data accuracy and streamlined reporting processes for the banking operations team.',
+      'https://github.com/hng011/commander',
   },
 ];
 
@@ -137,19 +113,17 @@ export const skillGroups: SkillGroup[] = [
       'Google GenAI',
       'Large Language Models (LLMs)',
       'Natural Language Processing (NLP)',
-      'Deep Learning',
-      'Hugging Face',
       'Data Science',
+      'Machine Learning',
+      'Deep Learning',
+      'Generative AI',
+      'RAG Development',
     ],
   },
   {
     category: 'Cloud & Infrastructure',
     items: [
-      'Google Cloud Platform (GCP)',
-      'Google BigQuery',
-      'Apache Airflow',
-      'NVIDIA DGX Supercomputers',
-      'CUDA',
+      'Google Cloud Platform',
       'Azure',
     ],
   },
@@ -157,22 +131,10 @@ export const skillGroups: SkillGroup[] = [
     category: 'Backend & Development',
     items: [
       'Python',
-      'JavaScript',
-      'Ext JS',
+      'FastAPI',
+      'JavaScript/TypeScript',
       'SQL',
       'ERP/CRM Systems',
-      'API Integration',
-      'RDL Reporting',
-    ],
-  },
-  {
-    category: 'Data & Visualization',
-    items: [
-      'Pandas',
-      'Matplotlib',
-      'Data Analysis',
-      'Data Visualization',
-      'Report Generation',
     ],
   },
 ];
