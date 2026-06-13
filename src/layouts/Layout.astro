@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import ThemeToggle from '../components/ThemeToggle.vue';
 ---
 
 <!doctype html>
@@ -15,8 +16,22 @@ import '../styles/global.css';
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (stored === 'dark' || (!stored && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
-  <body class="font-sans antialiased text-slate-900 bg-white">
+  <body class="font-sans antialiased text-slate-900 bg-white dark:text-slate-100 dark:bg-slate-900">
+    <nav class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-700">
+      <div class="max-w-5xl mx-auto flex items-center justify-end px-6 py-3">
+        <ThemeToggle client:load />
+      </div>
+    </nav>
     <slot />
   </body>
 </html>

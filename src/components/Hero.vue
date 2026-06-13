@@ -12,23 +12,23 @@ const certifications = [
 <template>
   <section
     id="hero"
-    class="min-h-screen flex items-center justify-center bg-white px-6 py-24"
+    class="min-h-screen flex items-center justify-center bg-white dark:bg-slate-900 px-6 py-24"
   >
     <div class="max-w-3xl mx-auto text-center">
-      <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-slate-900 mb-6">
+      <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-6">
         {{ name }}
       </h1>
-      <p class="text-lg md:text-xl text-slate-600 font-medium mb-4">
+      <p class="text-lg md:text-xl text-slate-600 dark:text-slate-300 font-medium mb-4">
         {{ headline }}
       </p>
-      <p class="text-base md:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed mb-8">
+      <p class="text-base md:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
         {{ tagline }}
       </p>
       <div class="flex flex-wrap justify-center gap-3">
         <span
           v-for="cert in certifications"
           :key="cert"
-          class="inline-flex items-center rounded-full bg-slate-100 px-4 py-1.5 text-sm font-medium text-slate-700"
+          class="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300"
         >
           {{ cert }}
         </span>
@@ -36,7 +36,7 @@ const certifications = [
       <div class="mt-10">
         <a
           href="#experience"
-          class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800 transition-colors"
+          class="inline-flex items-center gap-2 rounded-lg bg-slate-900 dark:bg-slate-100 dark:text-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800 dark:hover:bg-white transition-colors"
         >
           View Experience
           <svg
