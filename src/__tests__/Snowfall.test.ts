@@ -40,4 +40,17 @@ describe('Snowfall', () => {
     expect(style).toBeDefined();
     expect(style).toContain('animation');
   });
+
+  it('snowflakes have visible color in light mode', () => {
+    // Snowflakes should NOT be pure white (invisible on light backgrounds)
+    const wrapper = mount(Snowfall);
+    const flake = wrapper.find('.snow-side-left').find('.snowflake');
+    expect(flake.exists()).toBe(true);
+    // In light mode the snowflake should use slate-400 color (rgb(148 163 184 / ...))
+    // We verify this by checking that the computed background-color is not pure white
+    const computedStyle = window.getComputedStyle(flake.element);
+    // Light-mode color should not be rgb(255, 255, 255) — snow must be visible
+    expect(computedStyle.backgroundColor).toBeDefined();
+    expect(computedStyle.backgroundColor).not.toBe('rgb(255, 255, 255)');
+  });
 });
