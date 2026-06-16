@@ -94,7 +94,7 @@ const rightFlakes = computed(() => generateSnowflakes(14));
   position: absolute;
   top: -10px;
   border-radius: 50%;
-  background-color: rgb(255 255 255 / 0.7);
+  background-color: rgb(148 163 184 / 0.5);
   animation: snowfall linear infinite;
 }
 
