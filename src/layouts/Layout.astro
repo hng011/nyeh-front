@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import ThemeToggle from '../components/ThemeToggle.vue';
+import Snowfall from '../components/Snowfall.vue';
 ---
 
 <!doctype html>
@@ -33,6 +34,7 @@ import ThemeToggle from '../components/ThemeToggle.vue';
       </div>
     </nav>
     <slot />
+    <Snowfall client:load />
   </body>
 </html>
 
