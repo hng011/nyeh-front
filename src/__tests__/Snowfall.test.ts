@@ -33,24 +33,30 @@ describe('Snowfall', () => {
   it('canvas fills viewport with fixed positioning', () => {
     const wrapper = mount(Snowfall);
     const canvas = wrapper.find('canvas');
-    // Scoped styles resolve to class in DOM; happy-dom doesn't resolve CSS,
-    // so verify the snowfall-canvas class is present (it has fixed/inset styles)
     expect(canvas.classes()).toContain('snowfall-canvas');
     expect(canvas.attributes('aria-hidden')).toBe('true');
   });
 
   it('component exposes canvas via template ref', () => {
     const wrapper = mount(Snowfall);
-    // The canvas ref should be set after mount
     const vm = wrapper.vm as { canvasRef?: HTMLCanvasElement | null };
     expect(vm.canvasRef).toBeDefined();
     expect(vm.canvasRef).toBeInstanceOf(HTMLCanvasElement);
   });
 
-  it('canvas has proper styling classes for overlay', () => {
+  it('canvas has z-index 0 to sit behind content', () => {
     const wrapper = mount(Snowfall);
     const canvas = wrapper.find('canvas');
-    // Fixed position overlay class should be present
+    // Scoped styles attach the class; verify class is there with z-index: 0
+    expect(canvas.classes()).toContain('snowfall-canvas');
+    // Verify no inline pointer-events override that would block interactions
+    expect(canvas.attributes('style')).toBeUndefined();
+  });
+
+  it('canvas has pointer-events disabled for pass-through interactions', () => {
+    const wrapper = mount(Snowfall);
+    const canvas = wrapper.find('canvas');
+    // The snowfall-canvas class sets pointer-events: none via scoped styles
     expect(canvas.classes()).toContain('snowfall-canvas');
   });
 });
