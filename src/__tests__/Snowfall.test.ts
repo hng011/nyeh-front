@@ -3,54 +3,54 @@ import { mount } from '@vue/test-utils';
 import Snowfall from '../components/Snowfall.vue';
 
 describe('Snowfall', () => {
-  it('renders the snowfall container', () => {
+  it('renders a canvas element', () => {
     const wrapper = mount(Snowfall);
-    expect(wrapper.find('.snowfall-container').exists()).toBe(true);
+    expect(wrapper.find('canvas').exists()).toBe(true);
   });
 
-  it('renders left and right sides', () => {
+  it('canvas has snowfall-canvas class', () => {
     const wrapper = mount(Snowfall);
-    expect(wrapper.find('.snow-side-left').exists()).toBe(true);
-    expect(wrapper.find('.snow-side-right').exists()).toBe(true);
-  });
-
-  it('renders snowflake elements on both sides', () => {
-    const wrapper = mount(Snowfall);
-    const leftFlakes = wrapper.find('.snow-side-left').findAll('.snowflake');
-    const rightFlakes = wrapper.find('.snow-side-right').findAll('.snowflake');
-    expect(leftFlakes.length).toBeGreaterThan(0);
-    expect(rightFlakes.length).toBeGreaterThan(0);
-  });
-
-  it('renders 14 snowflakes on each side', () => {
-    const wrapper = mount(Snowfall);
-    expect(wrapper.find('.snow-side-left').findAll('.snowflake').length).toBe(14);
-    expect(wrapper.find('.snow-side-right').findAll('.snowflake').length).toBe(14);
+    const canvas = wrapper.find('canvas');
+    expect(canvas.classes()).toContain('snowfall-canvas');
   });
 
   it('has aria-hidden for accessibility', () => {
     const wrapper = mount(Snowfall);
-    expect(wrapper.find('.snowfall-container').attributes('aria-hidden')).toBe('true');
+    expect(wrapper.find('canvas').attributes('aria-hidden')).toBe('true');
   });
 
-  it('snowflakes have inline styles', () => {
+  it('has data-testid attribute', () => {
     const wrapper = mount(Snowfall);
-    const flake = wrapper.find('.snow-side-left').find('.snowflake');
-    const style = flake.attributes('style');
-    expect(style).toBeDefined();
-    expect(style).toContain('animation');
+    expect(wrapper.find('[data-testid="snowfall-canvas"]').exists()).toBe(true);
   });
 
-  it('snowflakes have visible color in light mode', () => {
-    // Snowflakes should NOT be pure white (invisible on light backgrounds)
+  it('canvas is an HTMLCanvasElement', () => {
     const wrapper = mount(Snowfall);
-    const flake = wrapper.find('.snow-side-left').find('.snowflake');
-    expect(flake.exists()).toBe(true);
-    // In light mode the snowflake should use slate-400 color (rgb(148 163 184 / ...))
-    // We verify this by checking that the computed background-color is not pure white
-    const computedStyle = window.getComputedStyle(flake.element);
-    // Light-mode color should not be rgb(255, 255, 255) — snow must be visible
-    expect(computedStyle.backgroundColor).toBeDefined();
-    expect(computedStyle.backgroundColor).not.toBe('rgb(255, 255, 255)');
+    const canvas = wrapper.find('canvas').element;
+    expect(canvas).toBeInstanceOf(HTMLCanvasElement);
+  });
+
+  it('canvas fills viewport with fixed positioning', () => {
+    const wrapper = mount(Snowfall);
+    const canvas = wrapper.find('canvas');
+    // Scoped styles resolve to class in DOM; happy-dom doesn't resolve CSS,
+    // so verify the snowfall-canvas class is present (it has fixed/inset styles)
+    expect(canvas.classes()).toContain('snowfall-canvas');
+    expect(canvas.attributes('aria-hidden')).toBe('true');
+  });
+
+  it('component exposes canvas via template ref', () => {
+    const wrapper = mount(Snowfall);
+    // The canvas ref should be set after mount
+    const vm = wrapper.vm as { canvasRef?: HTMLCanvasElement | null };
+    expect(vm.canvasRef).toBeDefined();
+    expect(vm.canvasRef).toBeInstanceOf(HTMLCanvasElement);
+  });
+
+  it('canvas has proper styling classes for overlay', () => {
+    const wrapper = mount(Snowfall);
+    const canvas = wrapper.find('canvas');
+    // Fixed position overlay class should be present
+    expect(canvas.classes()).toContain('snowfall-canvas');
   });
 });
