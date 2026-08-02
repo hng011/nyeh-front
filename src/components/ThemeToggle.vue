@@ -7,7 +7,6 @@ function applyTheme(dark: boolean) {
   isDark.value = dark;
   document.documentElement.classList.toggle('dark', dark);
   localStorage.setItem('theme', dark ? 'dark' : 'light');
-  document.dispatchEvent(new CustomEvent('themekeychange', { detail: { dark } }));
 }
 
 function toggle() {
@@ -22,10 +21,9 @@ onMounted(() => {
 <template>
   <button
     @click="toggle"
-    class="p-2 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+    class="p-2 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
   >
-    <span class="sr-only">{{ isDark ? 'Switch to light mode' : 'Switch to dark mode' }}</span>
     <!-- Sun icon -->
     <svg
       v-if="isDark"
@@ -35,7 +33,6 @@ onMounted(() => {
       viewBox="0 0 24 24"
       stroke="currentColor"
       stroke-width="2"
-      aria-hidden="true"
     >
       <path
         stroke-linecap="round"
@@ -52,7 +49,6 @@ onMounted(() => {
       viewBox="0 0 24 24"
       stroke="currentColor"
       stroke-width="2"
-      aria-hidden="true"
     >
       <path
         stroke-linecap="round"
