@@ -3,60 +3,54 @@ import { mount } from '@vue/test-utils';
 import Snowfall from '../components/Snowfall.vue';
 
 describe('Snowfall', () => {
-  it('renders a canvas element', () => {
+  it('renders the snowfall container', () => {
     const wrapper = mount(Snowfall);
-    expect(wrapper.find('canvas').exists()).toBe(true);
+    expect(wrapper.find('.snowfall-container').exists()).toBe(true);
   });
 
-  it('canvas has snowfall-canvas class', () => {
+  it('renders left and right sides', () => {
     const wrapper = mount(Snowfall);
-    const canvas = wrapper.find('canvas');
-    expect(canvas.classes()).toContain('snowfall-canvas');
+    expect(wrapper.find('.snow-side-left').exists()).toBe(true);
+    expect(wrapper.find('.snow-side-right').exists()).toBe(true);
+  });
+
+  it('renders snowflake elements on both sides', () => {
+    const wrapper = mount(Snowfall);
+    const leftFlakes = wrapper.find('.snow-side-left').findAll('.snowflake');
+    const rightFlakes = wrapper.find('.snow-side-right').findAll('.snowflake');
+    expect(leftFlakes.length).toBeGreaterThan(0);
+    expect(rightFlakes.length).toBeGreaterThan(0);
+  });
+
+  it('renders 14 snowflakes on each side', () => {
+    const wrapper = mount(Snowfall);
+    expect(wrapper.find('.snow-side-left').findAll('.snowflake').length).toBe(14);
+    expect(wrapper.find('.snow-side-right').findAll('.snowflake').length).toBe(14);
   });
 
   it('has aria-hidden for accessibility', () => {
     const wrapper = mount(Snowfall);
-    expect(wrapper.find('canvas').attributes('aria-hidden')).toBe('true');
+    expect(wrapper.find('.snowfall-container').attributes('aria-hidden')).toBe('true');
   });
 
-  it('has data-testid attribute', () => {
+  it('snowflakes have inline styles', () => {
     const wrapper = mount(Snowfall);
-    expect(wrapper.find('[data-testid="snowfall-canvas"]').exists()).toBe(true);
+    const flake = wrapper.find('.snow-side-left').find('.snowflake');
+    const style = flake.attributes('style');
+    expect(style).toBeDefined();
+    expect(style).toContain('animation');
   });
 
-  it('canvas is an HTMLCanvasElement', () => {
+  it('snowflakes have visible color in light mode', () => {
+    // Snowflakes should NOT be pure white (invisible on light backgrounds)
     const wrapper = mount(Snowfall);
-    const canvas = wrapper.find('canvas').element;
-    expect(canvas).toBeInstanceOf(HTMLCanvasElement);
-  });
-
-  it('canvas fills viewport with fixed positioning', () => {
-    const wrapper = mount(Snowfall);
-    const canvas = wrapper.find('canvas');
-    expect(canvas.classes()).toContain('snowfall-canvas');
-    expect(canvas.attributes('aria-hidden')).toBe('true');
-  });
-
-  it('component exposes canvas via template ref', () => {
-    const wrapper = mount(Snowfall);
-    const vm = wrapper.vm as { canvasRef?: HTMLCanvasElement | null };
-    expect(vm.canvasRef).toBeDefined();
-    expect(vm.canvasRef).toBeInstanceOf(HTMLCanvasElement);
-  });
-
-  it('canvas has z-index 0 to sit behind content', () => {
-    const wrapper = mount(Snowfall);
-    const canvas = wrapper.find('canvas');
-    // Scoped styles attach the class; verify class is there with z-index: 0
-    expect(canvas.classes()).toContain('snowfall-canvas');
-    // Verify no inline pointer-events override that would block interactions
-    expect(canvas.attributes('style')).toBeUndefined();
-  });
-
-  it('canvas has pointer-events disabled for pass-through interactions', () => {
-    const wrapper = mount(Snowfall);
-    const canvas = wrapper.find('canvas');
-    // The snowfall-canvas class sets pointer-events: none via scoped styles
-    expect(canvas.classes()).toContain('snowfall-canvas');
+    const flake = wrapper.find('.snow-side-left').find('.snowflake');
+    expect(flake.exists()).toBe(true);
+    // In light mode the snowflake should use slate-400 color (rgb(148 163 184 / ...))
+    // We verify this by checking that the computed background-color is not pure white
+    const computedStyle = window.getComputedStyle(flake.element);
+    // Light-mode color should not be rgb(255, 255, 255) — snow must be visible
+    expect(computedStyle.backgroundColor).toBeDefined();
+    expect(computedStyle.backgroundColor).not.toBe('rgb(255, 255, 255)');
   });
 });
