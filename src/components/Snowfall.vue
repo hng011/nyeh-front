@@ -52,10 +52,11 @@ onMounted(() => {
   if (!testCtx) return;
 
   renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0xdfe8f0, 4, 18);
+  scene.fog = new THREE.Fog(0xf8fafc, 4, 18);
 
   const camera = new THREE.PerspectiveCamera(
     50,
@@ -136,7 +137,7 @@ onMounted(() => {
 
   // --- Snow-covered ground ---
   const groundGeo = new THREE.PlaneGeometry(18, 5);
-  const groundMat = new THREE.MeshPhongMaterial({ color: 0xe8eef5 });
+  const groundMat = new THREE.MeshPhongMaterial({ color: 0xf8fafc });
   const ground = new THREE.Mesh(groundGeo, groundMat);
   ground.position.y = -5.2;
   ground.rotation.x = -0.15;
@@ -208,7 +209,7 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
   width: 100%;
   height: 100%;
 }

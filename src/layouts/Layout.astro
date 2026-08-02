@@ -33,8 +33,10 @@ import Snowfall from '../components/Snowfall.vue';
         <ThemeToggle client:load />
       </div>
     </nav>
-    <slot />
     <Snowfall client:load />
+    <div class="relative z-[1]">
+      <slot />
+    </div>
   </body>
 </html>
 
