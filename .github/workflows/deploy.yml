@@ -22,7 +22,7 @@ jobs:
         uses: withastro/action@v6
         env:
           PUBLIC_WS_ENDPOINT: ${{ secrets.WS_ENDPOINT }}
-          PUBLIC_WS_CONFIG_PASSWORD: ${{ secrets.WS_CONFIG_PASSWORD }}
+          PUBLIC_WS_CONFIG_PASSWORD_HASH: ${{ secrets.WS_CONFIG_PASSWORD_HASH }}
 
   deploy:
     needs: build

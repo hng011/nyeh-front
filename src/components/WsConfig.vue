@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import { WS_ENDPOINT_KEY, getWsEndpoint } from '../utils/wsConfig';
 
 const GATE_KEY = 'nyeh-ws-config-unlocked';
-const CONFIGURED_PASSWORD = import.meta.env.PUBLIC_WS_CONFIG_PASSWORD;
+const CONFIGURED_PASSWORD_HASH = import.meta.env.PUBLIC_WS_CONFIG_PASSWORD_HASH;
 
 const unlocked = ref(false);
 const passwordInput = ref('');
@@ -17,12 +17,20 @@ onMounted(() => {
   endpointInput.value = getWsEndpoint();
 });
 
-function unlock() {
-  if (!CONFIGURED_PASSWORD) {
+async function sha256Hex(text: string): Promise<string> {
+  const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+async function unlock() {
+  if (!CONFIGURED_PASSWORD_HASH) {
     gateError.value = 'No password configured for this build.';
     return;
   }
-  if (passwordInput.value === CONFIGURED_PASSWORD) {
+  const inputHash = await sha256Hex(passwordInput.value);
+  if (inputHash === CONFIGURED_PASSWORD_HASH) {
     unlocked.value = true;
     gateError.value = '';
     sessionStorage.setItem(GATE_KEY, '1');
