@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import ThemeToggle from '../components/ThemeToggle.vue';
 import Snowfall from '../components/Snowfall.vue';
+import ChatBot from '../components/ChatBot.vue';
 ---
 
 <!doctype html>
@@ -35,6 +36,7 @@ import Snowfall from '../components/Snowfall.vue';
     </nav>
     <slot />
     <Snowfall client:load />
+    <ChatBot client:load />
   </body>
 </html>
 
