@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, nextTick, onBeforeUnmount } from 'vue';
-import { getWsEndpoint } from '../utils/wsConfig';
+import { getWsEndpoint, getWsApiKey } from '../utils/wsConfig';
 
 type Message = { role: 'user' | 'bot'; text: string };
 type Status = 'idle' | 'connecting' | 'open' | 'error';
@@ -38,7 +38,8 @@ function connect() {
 
   status.value = 'connecting';
   const url = `${getWsEndpoint()}/${getSessionId()}`;
-  socket = new WebSocket(url);
+  const apiKey = getWsApiKey();
+  socket = apiKey ? new WebSocket(url, apiKey) : new WebSocket(url);
 
   socket.onopen = () => {
     status.value = 'open';
