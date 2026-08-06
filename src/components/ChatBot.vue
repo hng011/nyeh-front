@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, nextTick, onBeforeUnmount } from 'vue';
-import { getWsEndpoint, getWsApiKey } from '../utils/wsConfig';
+import { getWsEndpoint, getSessionEndpoint } from '../utils/wsConfig';
 
 type Message = { role: 'user' | 'bot'; text: string };
 type Status = 'idle' | 'connecting' | 'open' | 'error';
 
 const SESSION_KEY = 'nyeh-chat-session';
+// ponytail: mirrors agentik WS_MAX_MSG_SIZE; bump if backend .env changes
+const MAX_MESSAGE_LENGTH = 4096;
 
 const isOpen = ref(false);
 const status = ref<Status>('idle');
@@ -17,6 +19,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 let socket: WebSocket | null = null;
 let retryCount = 0;
 let retryTimer: ReturnType<typeof setTimeout> | null = null;
+const pendingMessages: string[] = [];
 
 function getSessionId(): string {
   let id = localStorage.getItem(SESSION_KEY);
@@ -33,17 +36,49 @@ function scrollToBottom() {
   });
 }
 
-function connect() {
+async function mintSession(): Promise<boolean> {
+  try {
+    const res = await fetch(getSessionEndpoint(), { credentials: 'include' });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+function scheduleRetry() {
+  retryCount += 1;
+  const delay = Math.min(1000 * 2 ** retryCount, 15000);
+  retryTimer = setTimeout(connect, delay);
+}
+
+function flushPending(ws: WebSocket) {
+  while (pendingMessages.length) {
+    ws.send(pendingMessages.shift()!);
+    isWaiting.value = true;
+  }
+}
+
+async function connect() {
   if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) return;
 
   status.value = 'connecting';
+
+  // session_token cookie is httpOnly - never read it here, browser just
+  // attaches it on the WS handshake automatically (same-site).
+  if (!(await mintSession())) {
+    status.value = 'error';
+    scheduleRetry();
+    return;
+  }
+  if (!isOpen.value) return; // widget closed while awaiting the session fetch
+
   const url = `${getWsEndpoint()}/${getSessionId()}`;
-  const apiKey = getWsApiKey();
-  socket = apiKey ? new WebSocket(url, apiKey) : new WebSocket(url);
+  socket = new WebSocket(url);
 
   socket.onopen = () => {
     status.value = 'open';
     retryCount = 0;
+    flushPending(socket!);
   };
 
   socket.onmessage = (event) => {
@@ -56,13 +91,12 @@ function connect() {
     status.value = 'error';
   };
 
-  socket.onclose = () => {
+  socket.onclose = (event) => {
     if (!isOpen.value) return;
-    status.value = 'error';
-    // ponytail: fixed backoff cap, per-attempt jitter if retries get noisy
-    retryCount += 1;
-    const delay = Math.min(1000 * 2 ** retryCount, 15000);
-    retryTimer = setTimeout(connect, delay);
+    // 1000 now also covers server idle-timeout closes - reconnect quietly
+    // instead of flashing the offline error banner.
+    status.value = event.code === 1000 ? 'connecting' : 'error';
+    scheduleRetry();
   };
 }
 
@@ -84,13 +118,18 @@ function toggleOpen() {
 
 function send() {
   const text = draft.value.trim();
-  if (!text || status.value !== 'open' || !socket) return;
+  if (!text || text.length > MAX_MESSAGE_LENGTH || status.value !== 'open') return;
 
   messages.value.push({ role: 'user', text });
-  socket.send(text);
   draft.value = '';
-  isWaiting.value = true;
   scrollToBottom();
+
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(text);
+    isWaiting.value = true;
+  } else {
+    pendingMessages.push(text);
+  }
 }
 
 onBeforeUnmount(disconnect);

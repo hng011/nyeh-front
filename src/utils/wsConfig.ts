@@ -5,6 +5,8 @@ export function getWsEndpoint(): string {
   return raw.replace(/\/+$/, '');
 }
 
-export function getWsApiKey(): string {
-  return import.meta.env.PUBLIC_WS_API_SECRET_KEY || '';
+export function getSessionEndpoint(): string {
+  const wsUrl = new URL(getWsEndpoint());
+  const httpProtocol = wsUrl.protocol === 'wss:' ? 'https:' : 'http:';
+  return `${httpProtocol}//${wsUrl.host}/api/v1/session`;
 }

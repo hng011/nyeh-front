@@ -23,7 +23,6 @@ jobs:
         env:
           PUBLIC_WS_ENDPOINT: ${{ secrets.WS_ENDPOINT }}
           PUBLIC_WS_CONFIG_PASSWORD_HASH: ${{ secrets.WS_CONFIG_PASSWORD_HASH }}
-          PUBLIC_WS_API_SECRET_KEY: ${{ secrets.WS_API_SECRET_KEY }}
 
   deploy:
     needs: build
