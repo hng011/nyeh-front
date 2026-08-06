@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, nextTick, onBeforeUnmount } from 'vue';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { getWsEndpoint, getSessionEndpoint } from '../utils/wsConfig';
 
 type Message = { role: 'user' | 'bot'; text: string };
@@ -34,6 +36,10 @@ function scrollToBottom() {
   nextTick(() => {
     if (scrollEl.value) scrollEl.value.scrollTop = scrollEl.value.scrollHeight;
   });
+}
+
+function renderMarkdown(text: string): string {
+  return DOMPurify.sanitize(marked.parse(text, { async: false, breaks: true }));
 }
 
 async function mintSession(): Promise<boolean> {
@@ -158,7 +164,7 @@ onBeforeUnmount(disconnect);
     >
       <div
         v-if="isOpen"
-        class="fixed inset-x-4 top-[6vh] bottom-[6vh] z-50 mx-auto flex max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+        class="fixed inset-x-4 top-[6vh] bottom-[6vh] z-50 mx-auto flex max-w-4xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900"
         @click.stop
       >
         <div class="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-slate-800">
@@ -198,21 +204,22 @@ onBeforeUnmount(disconnect);
         </div>
 
         <div ref="scrollEl" class="flex-1 overflow-y-auto px-4 py-4">
-          <div class="mx-auto max-w-2xl space-y-3">
+          <div class="mx-auto max-w-3xl space-y-3">
             <p v-if="messages.length === 0" class="text-sm text-slate-400 dark:text-slate-500">
               Ask me anything about Hans's work, skills, or experience.
             </p>
             <div v-for="(m, i) in messages" :key="i" class="flex" :class="m.role === 'user' ? 'justify-end' : 'justify-start'">
               <div
-                class="max-w-[85%] rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap"
-                :class="
-                  m.role === 'user'
-                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 rounded-br-sm'
-                    : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100 rounded-bl-sm'
-                "
+                v-if="m.role === 'user'"
+                class="max-w-[85%] rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 rounded-br-sm"
               >
                 {{ m.text }}
               </div>
+              <div
+                v-else
+                class="chat-md max-w-[85%] rounded-2xl px-3.5 py-2 text-sm bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100 rounded-bl-sm"
+                v-html="renderMarkdown(m.text)"
+              />
             </div>
             <div v-if="isWaiting" class="flex justify-start">
               <div class="flex items-center gap-1 rounded-2xl rounded-bl-sm bg-slate-100 px-3.5 py-2.5 dark:bg-slate-800">
@@ -260,3 +267,59 @@ onBeforeUnmount(disconnect);
     </button>
   </div>
 </template>
+
+<style scoped>
+.chat-md :deep(p) {
+  margin: 0;
+}
+.chat-md :deep(p + p) {
+  margin-top: 0.5em;
+}
+.chat-md :deep(ul),
+.chat-md :deep(ol) {
+  margin: 0.5em 0;
+  padding-left: 1.25em;
+}
+.chat-md :deep(li) {
+  margin: 0.15em 0;
+}
+.chat-md :deep(h1),
+.chat-md :deep(h2),
+.chat-md :deep(h3) {
+  margin: 0.6em 0 0.3em;
+  font-weight: 600;
+}
+.chat-md :deep(h1) {
+  font-size: 1.1em;
+}
+.chat-md :deep(h2) {
+  font-size: 1.05em;
+}
+.chat-md :deep(a) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.chat-md :deep(code) {
+  background: rgb(0 0 0 / 0.08);
+  border-radius: 0.25em;
+  padding: 0.1em 0.35em;
+  font-size: 0.85em;
+}
+.chat-md :deep(pre) {
+  background: rgb(0 0 0 / 0.08);
+  border-radius: 0.5em;
+  padding: 0.6em 0.75em;
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+.chat-md :deep(pre code) {
+  background: none;
+  padding: 0;
+}
+.chat-md :deep(blockquote) {
+  border-left: 2px solid currentColor;
+  opacity: 0.8;
+  padding-left: 0.75em;
+  margin: 0.5em 0;
+}
+</style>
