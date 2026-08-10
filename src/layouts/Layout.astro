@@ -3,6 +3,44 @@ import '../styles/global.css';
 import ThemeToggle from '../components/ThemeToggle.vue';
 import Snowfall from '../components/Snowfall.vue';
 import ChatBot from '../components/ChatBot.vue';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const DEFAULT_TITLE = 'Hans Naufal Granito — AI/ML Engineer & Software Developer';
+const DEFAULT_DESCRIPTION =
+  'Portfolio of Hans Naufal Granito, an AI/ML Engineer and Software Developer based in Tangerang Selatan, Indonesia, specializing in machine learning, cloud-native development (GCP, Azure), and AI infrastructure.';
+
+const { title = DEFAULT_TITLE, description = DEFAULT_DESCRIPTION, noindex = false } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Hans Naufal Granito',
+  jobTitle: 'AI/ML Engineer & Software Developer',
+  url: 'https://kaktus.foo',
+  email: 'mailto:hansnaufalgranito@gmail.com',
+  sameAs: ['https://www.linkedin.com/in/hansnaufalgranito', 'https://github.com/hng011'],
+  knowsAbout: [
+    'Machine Learning',
+    'Artificial Intelligence',
+    'Cloud Computing',
+    'Google Cloud Platform',
+    'Software Development',
+  ],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Tangerang Selatan',
+    addressRegion: 'Banten',
+    addressCountry: 'ID',
+  },
+};
+
+const sections = ['hero', 'experience', 'projects', 'skills', 'contact'];
 ---
 
 <!doctype html>
@@ -13,11 +51,25 @@ import ChatBot from '../components/ChatBot.vue';
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content="Hans Naufal Granito — AI/ML Engineer & Software Developer. Portfolio showcasing machine learning, cloud-native development, and AI infrastructure skills." />
-    <title>Hans Naufal Granito — AI/ML Engineer</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+    <link rel="canonical" href={canonicalURL} />
+    <title>{title}</title>
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content="Hans Naufal Granito" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script is:inline>
       (function () {
         const stored = localStorage.getItem('theme');
@@ -29,19 +81,410 @@ import ChatBot from '../components/ChatBot.vue';
     </script>
   </head>
   <body class="font-sans antialiased text-slate-900 bg-white dark:text-slate-100 dark:bg-slate-900">
-    <nav class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-700">
-      <div class="max-w-5xl mx-auto flex items-center justify-end px-6 py-3">
-        <ThemeToggle client:load />
-      </div>
+    <div id="scroll-progress-track" class="fixed top-0 left-0 w-full h-[3px] z-[60] bg-slate-200/60 dark:bg-slate-800/60">
+      <div id="scroll-progress" class="h-full bg-slate-900 dark:bg-slate-100"></div>
+    </div>
+
+    <div
+      class="fixed top-5 right-5 z-[60] rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur border border-slate-200 dark:border-slate-700 shadow-sm"
+    >
+      <ThemeToggle client:load />
+    </div>
+
+    <nav
+      aria-label="Section navigation"
+      class="fixed right-5 top-1/2 -translate-y-1/2 z-[60] hidden sm:flex flex-col gap-4"
+    >
+      {
+        sections.map((id) => (
+          <a
+            href={`#${id}`}
+            data-dot={id}
+            aria-label={`Go to ${id}`}
+            class="group relative block w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] data-[active=true]:bg-slate-900 dark:data-[active=true]:bg-slate-100 data-[active=true]:scale-125"
+          >
+            <span class="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-md bg-slate-900 dark:bg-slate-100 px-2 py-1 text-xs font-medium text-white dark:text-slate-900 opacity-0 group-hover:opacity-100 transition-opacity capitalize">
+              {id}
+            </span>
+          </a>
+        ))
+      }
     </nav>
+
     <slot />
     <Snowfall client:load />
+    <div id="ambient-light" aria-hidden="true" />
+    <div id="grain-overlay" aria-hidden="true" />
+    <div id="cursor" aria-hidden="true" />
     <ChatBot client:load />
   </body>
 </html>
 
 <style is:global>
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
   }
 </style>
+
+<script is:inline>
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var revealTargets = document.querySelectorAll('[data-reveal]');
+    if (!reduceMotion && 'IntersectionObserver' in window) {
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
+      );
+      revealTargets.forEach(function (el) {
+        io.observe(el);
+      });
+    } else {
+      revealTargets.forEach(function (el) {
+        el.classList.add('is-visible');
+      });
+    }
+
+    var progressBar = document.getElementById('scroll-progress');
+    var ambientLight = document.getElementById('ambient-light');
+    var parallaxEls = document.querySelectorAll('[data-parallax]');
+    var expFill = document.getElementById('experience-timeline-fill');
+    var ticking = false;
+
+    // Pinned sections: a tall outer wrapper (100vh + overflow) holds a sticky,
+    // viewport-height inner frame. As the page scrolls through the wrapper's
+    // extra height, the content is translated up inside the fixed frame so
+    // every bit of it becomes reachable via normal scrolling instead of being
+    // cropped by the next pinned section covering it.
+    var pins = Array.prototype.map.call(document.querySelectorAll('[data-pin-outer]'), function (outer) {
+      return {
+        outer: outer,
+        content: outer.querySelector('[data-pin-content]'),
+        overflow: 0,
+      };
+    });
+
+    function measurePins() {
+      pins.forEach(function (pin) {
+        if (!pin.content) return;
+        pin.content.style.transform = '';
+        var overflow = Math.max(0, pin.content.scrollHeight - window.innerHeight);
+        pin.overflow = overflow;
+        // Travel is exactly the content's own overflow — just enough scroll
+        // room to reveal it 1:1. No extra buffer: there's no recede/blur
+        // phase anymore, so padding scroll distance beyond the content
+        // itself only added a dead zone that felt rigid/laggy.
+        pin.outer.style.height = 'calc(100vh + ' + overflow + 'px)';
+      });
+    }
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(measurePins, 150);
+    });
+    measurePins();
+
+    // Outfit loads with display=swap and can reflow the (large, bold)
+    // headings after first layout without firing resize — that leaves
+    // pin.overflow stale, and since the recede transition is only allowed
+    // to start once revealProgress (derived from that same overflow value)
+    // hits 1, a stale-too-small overflow makes it start early, while real
+    // content is still unrevealed underneath. fonts.ready covers the font
+    // case; ResizeObserver on each pin's content covers everything else
+    // (already-cached fonts, any other late layout shift) so this can't
+    // go stale again regardless of cause.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        measurePins();
+        onScroll();
+      });
+    }
+
+    if (window.ResizeObserver) {
+      var remeasureTimer;
+      var ro = new ResizeObserver(function () {
+        clearTimeout(remeasureTimer);
+        remeasureTimer = setTimeout(function () {
+          measurePins();
+          onScroll();
+        }, 100);
+      });
+      pins.forEach(function (pin) {
+        if (pin.content) ro.observe(pin.content);
+      });
+    }
+
+    function onScroll() {
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      var progress = docHeight > 0 ? window.scrollY / docHeight : 0;
+
+      if (progressBar) {
+        progressBar.style.setProperty('--scroll-progress', progress);
+      }
+
+      // The glow drifts from just above the fold down toward the bottom as
+      // the user scrolls — one continuous light source moving through the
+      // whole page rather than each section lighting itself independently.
+      if (ambientLight) {
+        ambientLight.style.setProperty('--ambient-y', 15 + progress * 70 + '%');
+      }
+
+      if (!reduceMotion) {
+        parallaxEls.forEach(function (el) {
+          var rect = el.getBoundingClientRect();
+          var offset = (rect.top - window.innerHeight / 2) * -0.08;
+          el.style.setProperty('--parallax-y', offset + 'px');
+        });
+      }
+
+      // Read every pin's layout metrics first, then write styles in a
+      // second pass — interleaving read/write per pin (as before) forces a
+      // synchronous reflow between each section on every scroll frame,
+      // which is what showed up as laggy/stuttery scrolling.
+      var pinMetrics = pins.map(function (pin) {
+        if (!pin.content) return null;
+        var rect = pin.outer.getBoundingClientRect();
+        var travel = pin.outer.offsetHeight - window.innerHeight;
+        var pinProgress = travel > 0 ? Math.max(0, Math.min(1, -rect.top / travel)) : 0;
+        return { pin: pin, pinProgress: pinProgress };
+      });
+
+      pinMetrics.forEach(function (metrics) {
+        if (!metrics) return;
+        var pin = metrics.pin;
+        var pinProgress = metrics.pinProgress;
+
+        // Plain 1:1 reveal: content taller than the viewport translates up
+        // exactly as much as has been scrolled, nothing more. No recede
+        // phase (no fade/scale/blur) — that's what read as a rigid dead
+        // zone with laggy blur.
+        var translateY = pin.overflow > 0 && !reduceMotion ? -pinProgress * pin.overflow : 0;
+        pin.content.style.transform = pin.overflow > 0 ? 'translateY(' + translateY + 'px)' : '';
+
+        if (pin.outer.id === 'experience' && expFill) {
+          expFill.style.setProperty('--exp-progress', pinProgress * 100 + '%');
+        }
+      });
+
+      ticking = false;
+    }
+
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (!ticking) {
+          requestAnimationFrame(onScroll);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+    onScroll();
+
+    // Scrollspy: highlight the side dot for whichever pinned section
+    // currently occupies the viewport.
+    var dots = document.querySelectorAll('[data-dot]');
+    if (dots.length && 'IntersectionObserver' in window) {
+      var spy = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            var dot = document.querySelector('[data-dot="' + entry.target.id + '"]');
+            if (dot) dot.dataset.active = entry.isIntersecting ? 'true' : 'false';
+          });
+        },
+        { rootMargin: '-50% 0px -50% 0px', threshold: 0 }
+      );
+      pins.forEach(function (pin) {
+        spy.observe(pin.outer);
+      });
+    }
+
+    // Arrow-key section navigation: right/down jumps to the next pinned
+    // section, left/up to the previous one. Ignored while typing in a form
+    // field so it doesn't fight normal text-input arrow-key use.
+    if (pins.length) {
+      var pinOuters = pins.map(function (pin) {
+        return pin.outer;
+      });
+
+      var currentPinIndex = function () {
+        var y = window.scrollY + window.innerHeight * 0.5;
+        var idx = 0;
+        pinOuters.forEach(function (outer, i) {
+          if (outer.offsetTop <= y) idx = i;
+        });
+        return idx;
+      };
+
+      window.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowDown' && e.key !== 'ArrowLeft' && e.key !== 'ArrowUp') return;
+
+        var target = e.target;
+        var isFormField =
+          target &&
+          (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable);
+        if (isFormField) return;
+
+        e.preventDefault();
+        var next = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? currentPinIndex() + 1 : currentPinIndex() - 1;
+        next = Math.max(0, Math.min(pinOuters.length - 1, next));
+        window.scrollTo({ top: pinOuters[next].offsetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
+      });
+    }
+
+    // Mouse-driven parallax for pages/elements that don't scroll enough for
+    // the scroll-based parallax above to do anything (e.g. ws-config).
+    var mouseParallaxEls = document.querySelectorAll('[data-mouse-parallax]');
+    if (mouseParallaxEls.length && !reduceMotion) {
+      var mpTicking = false;
+      window.addEventListener(
+        'pointermove',
+        function (e) {
+          if (mpTicking) return;
+          mpTicking = true;
+          requestAnimationFrame(function () {
+            var nx = e.clientX / window.innerWidth - 0.5;
+            var ny = e.clientY / window.innerHeight - 0.5;
+            mouseParallaxEls.forEach(function (el) {
+              var strength = parseFloat(el.dataset.mouseParallax) || 20;
+              el.style.setProperty('--mpx', nx * strength + 'px');
+              el.style.setProperty('--mpy', ny * strength + 'px');
+            });
+            mpTicking = false;
+          });
+        },
+        { passive: true }
+      );
+    }
+
+    // Cursor-tracked spotlight glow on cards: position follows the pointer
+    // via CSS custom properties so the highlight itself is pure CSS.
+    var spotlightEls = document.querySelectorAll('[data-spotlight]');
+    if (spotlightEls.length) {
+      var spotTicking = false;
+      document.addEventListener(
+        'pointermove',
+        function (e) {
+          if (spotTicking) return;
+          spotTicking = true;
+          requestAnimationFrame(function () {
+            spotlightEls.forEach(function (el) {
+              var rect = el.getBoundingClientRect();
+              if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                el.style.setProperty('--mx', e.clientX - rect.left + 'px');
+                el.style.setProperty('--my', e.clientY - rect.top + 'px');
+              }
+            });
+            spotTicking = false;
+          });
+        },
+        { passive: true }
+      );
+    }
+
+    // 3D tilt on cards: rotate toward the pointer for a tactile, physical feel.
+    var tiltEls = document.querySelectorAll('[data-tilt]');
+    if (tiltEls.length && !reduceMotion) {
+      tiltEls.forEach(function (el) {
+        el.style.transition = 'transform 0.4s cubic-bezier(0.32,0.72,0,1)';
+        el.style.willChange = 'transform';
+        el.addEventListener(
+          'pointermove',
+          function (e) {
+            var rect = el.getBoundingClientRect();
+            var px = (e.clientX - rect.left) / rect.width - 0.5;
+            var py = (e.clientY - rect.top) / rect.height - 0.5;
+            el.style.transform =
+              'perspective(800px) rotateX(' + (-py * 8).toFixed(2) + 'deg) rotateY(' + (px * 8).toFixed(2) + 'deg) translateZ(8px)';
+          },
+          { passive: true }
+        );
+        el.addEventListener('pointerleave', function () {
+          el.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+        });
+      });
+    }
+
+    // Custom cursor state machine: DEFAULT -> INTERACTIVE -> PRESSED, one
+    // spring-followed element (see global.css). This is opt-in pointer-follow
+    // UI, not autoplay motion, so it stays on even under reduced-motion —
+    // that setting instead tunes the spring to be tighter/less bouncy rather
+    // than disabling the cursor's own inertia entirely (a fully instant
+    // cursor is what read as "dead" before).
+    var cursorEl = document.getElementById('cursor');
+    if (cursorEl && window.matchMedia('(pointer: fine)').matches) {
+      var curX = window.innerWidth / 2;
+      var curY = window.innerHeight / 2;
+      var curTargetX = curX;
+      var curTargetY = curY;
+      var curVX = 0;
+      var curVY = 0;
+      // Snappy catch-up with just enough spring to feel physical rather than
+      // teleporting — the previous values (0.055/0.85) traded too much
+      // response time for trailing motion and read as laggy.
+      var curStiffness = reduceMotion ? 0.35 : 0.22;
+      var curDamping = reduceMotion ? 0.55 : 0.6;
+
+      window.addEventListener(
+        'pointermove',
+        function (e) {
+          curTargetX = e.clientX;
+          curTargetY = e.clientY;
+        },
+        { passive: true }
+      );
+
+      // Fade out instead of sitting frozen at the last known position when
+      // the pointer actually leaves the browser viewport.
+      document.documentElement.addEventListener('mouseleave', function () {
+        cursorEl.style.opacity = '0';
+      });
+      document.documentElement.addEventListener('mouseenter', function () {
+        cursorEl.style.opacity = '1';
+      });
+
+      // Interactive vs. plain: two cursor states, still the same custom
+      // cursor — it transforms itself instead of the browser swapping in
+      // its own pointer icon.
+      document.addEventListener(
+        'pointerover',
+        function (e) {
+          var target = e.target;
+          var interactive = target.closest && target.closest('a, button, [data-tilt], [data-spotlight], input');
+          document.body.toggleAttribute('data-cursor-hover', !!interactive);
+        },
+        { passive: true }
+      );
+
+      document.addEventListener('pointerdown', function () {
+        document.body.setAttribute('data-cursor-down', '');
+      });
+      document.addEventListener('pointerup', function () {
+        document.body.removeAttribute('data-cursor-down');
+      });
+
+      // Spring instead of plain lerp: the cursor can slightly overshoot a
+      // fast pointer move and settle back, instead of asymptotically
+      // crawling toward it — reads as weight, not lag.
+      (function cursorLoop() {
+        var ax = (curTargetX - curX) * curStiffness;
+        var ay = (curTargetY - curY) * curStiffness;
+        curVX = (curVX + ax) * curDamping;
+        curVY = (curVY + ay) * curDamping;
+        curX += curVX;
+        curY += curVY;
+        cursorEl.style.transform = 'translate3d(' + curX + 'px,' + curY + 'px,0) translate(-50%,-50%)';
+        requestAnimationFrame(cursorLoop);
+      })();
+    }
+
+  })();
+</script>

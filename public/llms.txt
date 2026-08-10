@@ -1,0 +1,26 @@
+# Hans Naufal Granito
+
+> AI/ML Engineer & Software Developer based in Tangerang Selatan, Banten, Indonesia. Builds machine learning systems, cloud-native infrastructure (Google Cloud Platform, Azure), and AI-powered applications.
+
+Portfolio site: single-page, sections below are reachable as anchors on https://kaktus.foo/
+
+## Experience
+- Machine Learning Engineer at Data Labs Analytics (Indonesia) — Oct 2025–Present. Builds and deploys ML models, works with GCP infrastructure, BigQuery, and Google GenAI.
+- Prior roles: Data Science Course Assistant and HPC-UG Lab Assistant at Gunadarma University, Full Stack Web Developer at Minova Infotech Solutions, Data Analytics and Administrative at Bank Negara Indonesia, and Machine Learning track student at Bangkit Academy (led by Google, Tokopedia, Gojek, Traveloka).
+
+## Certifications
+- Certified Associate Data Scientist (BNSP)
+- TensorFlow Developer (DCML / DeepLearning.AI)
+
+## Skills
+AI & Machine Learning: TensorFlow, Google GenAI, LLMs, NLP, Data Science, Deep Learning, Generative AI, RAG Development.
+Cloud & Infrastructure: Google Cloud Platform, Azure.
+Backend & Development: Python, FastAPI, JavaScript/TypeScript, SQL, ERP/CRM Systems.
+
+## Projects
+- Commander (https://github.com/hng011/commander) — a client-server TCP/IP socket application for remote command execution, written in Python.
+
+## Contact
+- Email: hansnaufalgranito@gmail.com
+- LinkedIn: https://www.linkedin.com/in/hansnaufalgranito
+- GitHub: https://github.com/hng011
