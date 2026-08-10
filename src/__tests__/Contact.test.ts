@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import Contact from '../components/Contact.vue';
 
@@ -19,16 +19,30 @@ describe('Contact', () => {
     expect(githubLink!.attributes('rel')).toBe('noopener noreferrer');
   });
 
-  it('renders email link', () => {
+  it('renders a copy-to-clipboard button for the email', () => {
     const wrapper = mount(Contact);
-    const links = wrapper.findAll('a');
-    const emailLink = links.find((l) =>
-      l.text().includes('hansnaufalgranito@gmail.com'),
+    const buttons = wrapper.findAll('button');
+    const emailButton = buttons.find((b) =>
+      b.text().includes('hansnaufalgranito@gmail.com'),
     );
-    expect(emailLink).toBeDefined();
-    expect(emailLink!.attributes('href')).toBe(
-      'mailto:hansnaufalgranito@gmail.com',
+    expect(emailButton).toBeDefined();
+  });
+
+  it('copies the email to the clipboard on click', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    });
+
+    const wrapper = mount(Contact);
+    const buttons = wrapper.findAll('button');
+    const emailButton = buttons.find((b) =>
+      b.text().includes('hansnaufalgranito@gmail.com'),
     );
+    await emailButton!.trigger('click');
+
+    expect(writeText).toHaveBeenCalledWith('hansnaufalgranito@gmail.com');
   });
 
   it('renders LinkedIn link with correct href', () => {

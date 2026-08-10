@@ -100,8 +100,8 @@ export const projects: Project[] = [
     description:
       'Networking Stuff – a glimpse into TCP/IP with a Client-Server Architecture for Remote Command Execution.',
     techStack: ['Python', 'Socket Programming', 'Client/Server Architecture'],
-    outcome:
-      'https://github.com/hng011/commander',
+    outcome: 'Working client-server prototype demonstrating remote command execution over raw TCP sockets.',
+    link: 'https://github.com/hng011/commander',
   },
 ];
 

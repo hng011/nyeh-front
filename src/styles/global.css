@@ -2,6 +2,236 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-button:not(:disabled) {
-  cursor: pointer;
+/* Native scrollbar hidden — the fixed progress bar at the top of the page
+   is the scroll indicator; a second one at the edge was redundant and, with
+   the snow layer nearby, hard to see anyway. Scrolling itself is untouched. */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch/coarse-pointer fallback only — fine-pointer devices get the custom
+   cursor system below, which must win the specificity fight against this
+   rule (hence the matching `:not(:disabled)` on both sides down there). */
+@media (pointer: coarse), (pointer: none) {
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  [data-parallax] {
+    transform: translateY(calc(var(--parallax-y, 0px)));
+    will-change: transform;
+  }
+
+  [data-mouse-parallax] {
+    transform: translate3d(calc(var(--mpx, 0px)), calc(var(--mpy, 0px)), 0);
+    transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+    will-change: transform;
+  }
+
+}
+
+#scroll-progress {
+  width: 100%;
+  transform: scaleX(var(--scroll-progress, 0));
+  transform-origin: left;
+}
+
+#experience-timeline-fill {
+  height: var(--exp-progress, 0%);
+  transition: height 0.1s linear;
+}
+
+[data-pin-outer] {
+  position: relative;
+}
+
+[data-pin-inner] {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+}
+
+/* Shared top-down vignette: the same light source in both themes, so
+   section atmosphere reads as one consistent design instead of dark mode
+   getting bespoke gradients light mode never had. */
+[data-pin-inner]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 70% at 50% -10%, rgb(15 23 42 / 0.035), transparent 60%);
+  pointer-events: none;
+}
+
+.dark [data-pin-inner]::before {
+  background: radial-gradient(120% 75% at 50% -10%, rgb(203 213 225 / 0.14), transparent 65%);
+}
+
+[data-pin-content] {
+  will-change: transform;
+}
+
+#grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 55;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.dark #grain-overlay {
+  opacity: 0.08;
+}
+
+[data-spotlight] {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-spotlight]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgb(15 23 42 / 0.06), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.dark [data-spotlight]::before {
+  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / 0.08), transparent 70%);
+}
+
+[data-spotlight]:hover::before {
+  opacity: 1;
+}
+
+/* Glossy card treatment: a soft inner highlight along the top edge so cards
+   read as physical glass/plastic instead of flat filled rectangles, plus a
+   shared elevation shadow so both themes get the same "lifted surface" cue
+   from the same source instead of dark mode being handled as an afterthought. */
+[data-spotlight] {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.5), transparent 40%);
+  box-shadow:
+    0 1px 2px rgb(15 23 42 / 0.04),
+    0 12px 28px -12px rgb(15 23 42 / 0.12);
+  transition: box-shadow 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
+}
+
+.dark [data-spotlight] {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.07), transparent 40%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 1px 0 rgb(255 255 255 / 0.04),
+    0 16px 40px -16px rgb(0 0 0 / 0.6);
+}
+
+[data-spotlight]:hover {
+  box-shadow:
+    0 2px 4px rgb(15 23 42 / 0.06),
+    0 20px 40px -16px rgb(15 23 42 / 0.16);
+}
+
+.dark [data-spotlight]:hover {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    0 1px 0 rgb(255 255 255 / 0.06),
+    0 24px 48px -16px rgb(0 0 0 / 0.7);
+}
+
+/* Custom cursor: ONE spring-followed element (not a separately-lagged
+   dot+ring pair — that read as the dot "leaving" the ring during fast
+   moves). Adaptive contrast via mix-blend-mode: difference, so it never
+   needs per-theme or per-surface color logic. Replaces the system pointer
+   everywhere, including over interactive elements, on precision pointers. */
+@media (pointer: fine) {
+  body,
+  a,
+  button:not(:disabled),
+  [data-tilt] {
+    cursor: none;
+  }
+
+  input,
+  textarea,
+  select {
+    cursor: text;
+  }
+
+  #cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 70;
+    pointer-events: none;
+    border-radius: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    mix-blend-mode: difference;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    opacity: 1;
+    transition: width 0.25s cubic-bezier(0.32, 0.72, 0, 1), height 0.25s cubic-bezier(0.32, 0.72, 0, 1),
+      border-radius 0.25s ease, opacity 0.2s ease;
+  }
+
+  /* Hovering an interactive element: the cursor itself grows to signal
+     "clickable" instead of the browser swapping in a pointer icon. */
+  body[data-cursor-hover] #cursor {
+    width: 52px;
+    height: 52px;
+  }
+
+  /* Click feedback: quick compress reads as a tactile press. */
+  body[data-cursor-down] #cursor {
+    width: 10px;
+    height: 10px;
+    transition-duration: 0.1s;
+  }
+}
+
+/* Ambient scroll-linked light: a single soft glow that drifts as the page
+   scrolls, giving section transitions a shared lighting cue instead of each
+   section feeling like an unrelated flat panel. z-index must clear every
+   pinned section (max z-50) or this never renders —
+   it was sitting at z-2, permanently hidden behind opaque section
+   backgrounds, which is the actual reason dark mode read as "nothing
+   changing" between sections. blend-mode instead of flat opacity so it
+   reads as light interacting with the page rather than a wash on top of it. */
+#ambient-light {
+  position: fixed;
+  inset: 0;
+  z-index: 51;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  background: radial-gradient(55% 45% at 50% var(--ambient-y, 20%), rgb(15 23 42 / 0.05), transparent 70%);
+}
+
+.dark #ambient-light {
+  mix-blend-mode: screen;
+  background: radial-gradient(65% 55% at 50% var(--ambient-y, 20%), rgb(203 213 225 / 0.22), transparent 70%);
 }
