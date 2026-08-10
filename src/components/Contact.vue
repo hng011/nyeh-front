@@ -24,7 +24,7 @@ async function copyEmail() {
   <footer id="contact" data-pin-outer>
     <div
       data-pin-inner
-      class="z-50 items-center justify-center bg-white dark:bg-slate-950"
+      class="z-50 items-center justify-center bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-white/10"
     >
       <div data-pin-content class="w-full px-6 py-16">
         <div class="max-w-3xl mx-auto text-center">

@@ -7,7 +7,7 @@ import { projects } from '../utils/data';
   <section id="projects" data-pin-outer>
     <div
       data-pin-inner
-      class="z-30 items-start bg-white dark:bg-slate-950"
+      class="z-30 items-start bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-white/10"
     >
       <div data-pin-content class="w-full px-6 py-24">
         <div class="max-w-5xl mx-auto w-full">
