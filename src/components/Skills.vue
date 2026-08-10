@@ -7,7 +7,7 @@ import { skillGroups } from '../utils/data';
   <section id="skills" data-pin-outer>
     <div
       data-pin-inner
-      class="z-40 items-start bg-slate-50 dark:bg-slate-900"
+      class="z-40 items-start bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-white/10"
     >
       <div data-pin-content class="w-full px-6 py-24">
         <div class="max-w-5xl mx-auto w-full">

@@ -7,7 +7,7 @@ import { experiences } from '../utils/data';
   <section id="experience" data-pin-outer>
     <div
       data-pin-inner
-      class="z-20 items-start bg-slate-50 dark:bg-slate-900"
+      class="z-20 items-start bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-white/10"
     >
       <div data-pin-content class="w-full px-6 py-24">
         <div class="max-w-4xl mx-auto w-full">
@@ -30,7 +30,7 @@ import { experiences } from '../utils/data';
               class="mb-12 pl-8 md:pl-12 relative"
             >
               <div
-                class="absolute w-3 h-3 bg-slate-900 dark:bg-slate-300 rounded-full -left-[7px] top-1.5 ring-4 ring-slate-50 dark:ring-slate-900"
+                class="absolute w-3 h-3 bg-slate-900 dark:bg-slate-300 rounded-full -left-[7px] top-1.5 ring-4 ring-slate-100 dark:ring-slate-800"
               />
               <div class="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1 mb-2">
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ exp.title }}</h3>
