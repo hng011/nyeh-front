@@ -83,7 +83,7 @@ async function copyEmail() {
         </a>
       </div>
           <p class="text-xs text-slate-400 dark:text-slate-500 mt-10">
-            &copy; {{ new Date().getFullYear() }} Hans Naufal Granito. Kota Tangerang Selatan, Banten, Indonesia.
+            &copy; {{ new Date().getFullYear() }} Hans Naufal Granito. South Tangerang, Indonesia.
           </p>
         </div>
       </div>
