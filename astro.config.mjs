@@ -4,7 +4,7 @@ import vue from '@astrojs/vue';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://kaktus.foo',
+  site: 'https://hans.kaktus.foo',
 
   integrations: [vue()],
 
